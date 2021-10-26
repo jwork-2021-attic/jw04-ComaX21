@@ -23,10 +23,6 @@ public class WorldScreen implements Screen {
         bros = new Calabash[16][16];
         Random random = new Random();
 
-
-        HashSet<Integer> set = new HashSet<>();
-		
-
         for(int i = 0; i < 16; ++i)
         {
             
