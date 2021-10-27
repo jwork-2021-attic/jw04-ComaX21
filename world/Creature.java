@@ -115,7 +115,9 @@ public class Creature {
         world.dig(wx, wy);
     }
 
-    public void moveBy(int mx, int my) {
+    public boolean moveBy(int mx, int my) {
+        if(x + mx >= this.world.width() || y + my >= this.world.height() || x + mx < 0 || y + my < 0)
+            return false;
         Creature other = world.creature(x + mx, y + my);
 
         if (other == null) {
@@ -123,6 +125,7 @@ public class Creature {
         } else {
             attack(other);
         }
+        return true;
     }
 
     public void attack(Creature other) {

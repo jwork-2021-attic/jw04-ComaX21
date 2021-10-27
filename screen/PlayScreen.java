@@ -38,8 +38,8 @@ public class PlayScreen implements Screen {
     private List<String> oldMessages;
 
     public PlayScreen() {
-        this.screenWidth = 80;
-        this.screenHeight = 24;
+        this.screenWidth = 50;
+        this.screenHeight = 50;
         createWorld();
         this.messages = new ArrayList<String>();
         this.oldMessages = new ArrayList<String>();
@@ -51,13 +51,13 @@ public class PlayScreen implements Screen {
     private void createCreatures(CreatureFactory creatureFactory) {
         this.player = creatureFactory.newPlayer(this.messages);
 
-        for (int i = 0; i < 8; i++) {
+        /*for (int i = 0; i < 8; i++) {
             creatureFactory.newFungus();
-        }
+        }*/
     }
 
     private void createWorld() {
-        world = new WorldBuilder(90, 31).makeCaves().build();
+        world = new WorldBuilder(50, 50).makeMaze().build();
     }
 
     private void displayTiles(AsciiPanel terminal, int left, int top) {
@@ -88,9 +88,8 @@ public class PlayScreen implements Screen {
     }
 
     private void displayMessages(AsciiPanel terminal, List<String> messages) {
-        int top = this.screenHeight - messages.size();
         for (int i = 0; i < messages.size(); i++) {
-            terminal.write(messages.get(i), 1, top + i + 1);
+            terminal.write(messages.get(i), 1, 51);
         }
         this.oldMessages.addAll(messages);
         messages.clear();
@@ -103,29 +102,33 @@ public class PlayScreen implements Screen {
         // Player
         terminal.write(player.glyph(), player.x() - getScrollX(), player.y() - getScrollY(), player.color());
         // Stats
-        String stats = String.format("%3d/%3d hp", player.hp(), player.maxHP());
-        terminal.write(stats, 1, 23);
+        //String stats = String.format("%3d/%3d hp", player.hp(), player.maxHP());
+        //terminal.write(stats, 1, 50);
         // Messages
-        displayMessages(terminal, this.messages);
+        //displayMessages(terminal, this.messages);
     }
 
     @Override
     public Screen respondToUserInput(KeyEvent key) {
+        boolean result = true;
         switch (key.getKeyCode()) {
             case KeyEvent.VK_LEFT:
-                player.moveBy(-1, 0);
+                result = player.moveBy(-1, 0);
                 break;
             case KeyEvent.VK_RIGHT:
-                player.moveBy(1, 0);
+                result = player.moveBy(1, 0);
                 break;
             case KeyEvent.VK_UP:
-                player.moveBy(0, -1);
+                result = player.moveBy(0, -1);
                 break;
             case KeyEvent.VK_DOWN:
-                player.moveBy(0, 1);
+                result = player.moveBy(0, 1);
                 break;
         }
-        return this;
+        if(result)
+            return this;
+        else
+            return new WinScreen();
     }
 
     public int getScrollX() {

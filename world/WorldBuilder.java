@@ -39,6 +39,29 @@ public class WorldBuilder {
         return new World(tiles);
     }
 
+    private WorldBuilder buildMaze()
+    {
+        MazeGenerator mazeGenerator = new MazeGenerator(this.width);
+        mazeGenerator.generateMaze();
+        int[][] maze = mazeGenerator.getInitMaze();
+        for (int width = 0; width < this.width; width++) {
+            for (int height = 0; height < this.height; height++) {
+
+                switch (maze[width][height]) {
+                    case 0:
+                        tiles[width][height] = Tile.WALL;
+                        break;
+                    case 1:
+                        tiles[width][height] = Tile.FLOOR;
+                        break;
+                }
+            }
+        }
+        
+        return this;
+    }
+
+
     private WorldBuilder randomizeTiles() {
         for (int width = 0; width < this.width; width++) {
             for (int height = 0; height < this.height; height++) {
@@ -48,7 +71,7 @@ public class WorldBuilder {
                         tiles[width][height] = Tile.FLOOR;
                         break;
                     case 1:
-                        tiles[width][height] = Tile.WALL;
+                        tiles[width][height] = Tile.FLOOR;
                         break;
                 }
             }
@@ -95,5 +118,9 @@ public class WorldBuilder {
 
     public WorldBuilder makeCaves() {
         return randomizeTiles().smooth(8);
+    }
+
+    public WorldBuilder makeMaze(){
+        return buildMaze();
     }
 }
