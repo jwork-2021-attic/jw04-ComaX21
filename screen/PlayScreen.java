@@ -38,9 +38,9 @@ public class PlayScreen implements Screen {
     private List<String> oldMessages;
 
     public PlayScreen() {
-        this.screenWidth = 50;
-        this.screenHeight = 50;
-        createWorld();
+        this.screenWidth = 40;
+        this.screenHeight = 40;
+        createMazeWorld();
         this.messages = new ArrayList<String>();
         this.oldMessages = new ArrayList<String>();
 
@@ -49,38 +49,35 @@ public class PlayScreen implements Screen {
     }
 
     private void createCreatures(CreatureFactory creatureFactory) {
-        this.player = creatureFactory.newPlayer(this.messages);
+        this.player = creatureFactory.newMazePlayer(this.messages);
 
         /*for (int i = 0; i < 8; i++) {
             creatureFactory.newFungus();
         }*/
     }
 
-    private void createWorld() {
-        world = new WorldBuilder(50, 50).makeMaze().build();
+    private void createMazeWorld() {
+        world = new WorldBuilder(40, 40).makeMaze().build();
     }
 
-    private void displayTiles(AsciiPanel terminal, int left, int top) {
+    private void displayTiles(AsciiPanel terminal) {
         // Show terrain
         for (int x = 0; x < screenWidth; x++) {
             for (int y = 0; y < screenHeight; y++) {
-                int wx = x + left;
-                int wy = y + top;
-
-                if (player.canSee(wx, wy)) {
-                    terminal.write(world.glyph(wx, wy), x, y, world.color(wx, wy));
+                //terminal.write(world.glyph(x, y), x, y, world.color(x, y));
+                if (player.canSee(x, y)) {
+                    terminal.write(world.glyph(x, y), x, y, world.color(x, y));
                 } else {
-                    terminal.write(world.glyph(wx, wy), x, y, Color.DARK_GRAY);
+                    terminal.write(world.glyph(x, y), x, y, Color.DARK_GRAY);
                 }
             }
         }
+        //Show end
+        terminal.write((char) 3, this.world.width() - 1, this.world.height() - 1, Color.red);
         // Show creatures
         for (Creature creature : world.getCreatures()) {
-            if (creature.x() >= left && creature.x() < left + screenWidth && creature.y() >= top
-                    && creature.y() < top + screenHeight) {
-                if (player.canSee(creature.x(), creature.y())) {
-                    terminal.write(creature.glyph(), creature.x() - left, creature.y() - top, creature.color());
-                }
+            if (player.canSee(creature.x(), creature.y())) {
+                terminal.write(creature.glyph(), creature.x(), creature.y(), creature.color());
             }
         }
         // Creatures can choose their next action now
@@ -98,9 +95,9 @@ public class PlayScreen implements Screen {
     @Override
     public void displayOutput(AsciiPanel terminal) {
         // Terrain and creatures
-        displayTiles(terminal, getScrollX(), getScrollY());
+        displayTiles(terminal);
         // Player
-        terminal.write(player.glyph(), player.x() - getScrollX(), player.y() - getScrollY(), player.color());
+        terminal.write(player.glyph(), player.x(), player.y(), player.color());
         // Stats
         //String stats = String.format("%3d/%3d hp", player.hp(), player.maxHP());
         //terminal.write(stats, 1, 50);
@@ -110,7 +107,7 @@ public class PlayScreen implements Screen {
 
     @Override
     public Screen respondToUserInput(KeyEvent key) {
-        boolean result = true;
+        boolean result = false;
         switch (key.getKeyCode()) {
             case KeyEvent.VK_LEFT:
                 result = player.moveBy(-1, 0);
@@ -126,17 +123,10 @@ public class PlayScreen implements Screen {
                 break;
         }
         if(result)
-            return this;
-        else
             return new WinScreen();
+        else
+            return this;
     }
 
-    public int getScrollX() {
-        return Math.max(0, Math.min(player.x() - screenWidth / 2, world.width() - screenWidth));
-    }
-
-    public int getScrollY() {
-        return Math.max(0, Math.min(player.y() - screenHeight / 2, world.height() - screenHeight));
-    }
 
 }

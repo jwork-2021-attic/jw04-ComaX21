@@ -116,16 +116,21 @@ public class Creature {
     }
 
     public boolean moveBy(int mx, int my) {
-        if(x + mx >= this.world.width() || y + my >= this.world.height() || x + mx < 0 || y + my < 0)
+        if(x + mx < 0 || x + mx >= this.world.width() ||  y + my < 0 || y + my >= this.world.height()){
             return false;
-        Creature other = world.creature(x + mx, y + my);
+        }else if(x + mx == this.world.width() - 1 && y + my == this.world.height() - 1){
+            return true;
+        }else{
+            Creature other = world.creature(x + mx, y + my);
 
-        if (other == null) {
-            ai.onEnter(x + mx, y + my, world.tile(x + mx, y + my));
-        } else {
-            attack(other);
+            if (other == null) {
+                ai.onEnter(x + mx, y + my, world.tile(x + mx, y + my));
+            } else {
+                attack(other);
+            }
+            return false;
         }
-        return true;
+        
     }
 
     public void attack(Creature other) {

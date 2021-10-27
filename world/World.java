@@ -71,6 +71,17 @@ public class World {
         }
     }
 
+    public boolean addAtGivenLocation(Creature creature, int x, int y)
+    {
+        if(!tile(x, y).isGround())
+            return false;
+        else{
+            creature.setX(x);
+            creature.setY(y);
+            this.creatures.add(creature);
+            return true;
+        }
+    }
     public void addAtEmptyLocation(Creature creature) {
         int x;
         int y;

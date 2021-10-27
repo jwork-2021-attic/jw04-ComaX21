@@ -32,6 +32,13 @@ public class CreatureFactory {
     public CreatureFactory(World world) {
         this.world = world;
     }
+    
+    public Creature newMazePlayer(List<String> messages){
+        Creature player = new Creature(this.world, (char)2, AsciiPanel.brightWhite, 100, 20, 5, 9);
+        world.addAtGivenLocation(player, 0, 0);
+        new PlayerAI(player, messages);
+        return player;
+    }
 
     public Creature newPlayer(List<String> messages) {
         Creature player = new Creature(this.world, (char)2, AsciiPanel.brightWhite, 100, 20, 5, 9);
